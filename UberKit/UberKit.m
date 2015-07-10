@@ -93,11 +93,6 @@ NSString * const mobile_safari_string = @"com.apple.mobilesafari";
     return _accessToken;
 }
 
-- (void) setAuthTokenWith:(NSString *)token
-{
-    _accessToken = token;
-}
-
 #pragma mark - Product Types
 
 - (void) getProductsForLocation:(CLLocation *)location withCompletionHandler:(CompletionHandler)completion
@@ -334,11 +329,12 @@ NSString * const mobile_safari_string = @"com.apple.mobilesafari";
 {
     [[NXOAuth2AccountStore sharedStore] setClientID:_clientID
                                              secret:_clientSecret
+                                              scope:[NSSet setWithObjects:@"request", @"history_lite", @"profile", nil]
                                    authorizationURL:[NSURL URLWithString:@"https://login.uber.com/oauth/authorize"]
                                            tokenURL:[NSURL URLWithString:@"https://login.uber.com/oauth/token"]
                                         redirectURL:[NSURL URLWithString:_redirectURL]
+                                      keyChainGroup:nil
                                      forAccountType:_applicationName];
-    
     
     
     [[NSNotificationCenter defaultCenter] addObserverForName:NXOAuth2AccountStoreAccountsDidChangeNotification
