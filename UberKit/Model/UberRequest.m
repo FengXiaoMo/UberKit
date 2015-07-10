@@ -16,9 +16,15 @@
     if (self) {
         _request_id = dictionary[@"request_id"];
         _status = dictionary[@"status"];
-        _driver = [[UberDriver alloc] initWithDictionary:dictionary[@"driver"]];
-        _vehicle = [[UberVehicle alloc] initWithDictionary:dictionary[@"vehicle"]];
-        _location = [[UberLocation alloc] initWithDictionary:dictionary[@"location"]];
+        if (![dictionary[@"driver"] isEqual:[NSNull null]]) {
+            _driver = [[UberDriver alloc] initWithDictionary:dictionary[@"driver"]];
+        }
+        if (![dictionary[@"vehicle"] isEqual:[NSNull null]]) {
+            _vehicle = [[UberVehicle alloc] initWithDictionary:dictionary[@"vehicle"]];
+        }
+        if (![dictionary[@"location"] isEqual:[NSNull null]]) {
+            _location = [[UberLocation alloc] initWithDictionary:dictionary[@"location"]];
+        }
         _eta = [dictionary[@"eta"] integerValue];
         _surge_multiplier = [dictionary[@"surge_multiplier"] floatValue];
     }
