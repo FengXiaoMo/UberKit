@@ -25,6 +25,7 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreLocation/CoreLocation.h>
+#import <UIKit/UIKit.h>
 #import "NXOAuth2.h"
 #import "UberProduct.h"
 #import "UberPrice.h"
@@ -32,6 +33,7 @@
 #import "UberActivity.h"
 #import "UberProfile.h"
 #import "UberPromotion.h"
+#import "UberRequest.h"
 
 @class UberKit;
 
@@ -45,7 +47,7 @@
 typedef void (^CompletionHandler) (NSArray *resultsArray, NSURLResponse *response, NSError *error);
 typedef void (^ProfileHandler) (UberProfile *profile, NSURLResponse *response, NSError *error);
 typedef void (^PromotionHandler) (UberPromotion *promotion, NSURLResponse *response, NSError *error);
-typedef void (^RequestHandler) (NSDictionary *uberResponse, NSURLResponse *response, NSError *error);
+typedef void (^RequestHandler) (UberRequest *requestResult, NSURLResponse *response, NSError *error);
 
 @interface UberKit : NSObject <UIWebViewDelegate>
 

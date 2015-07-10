@@ -26,6 +26,7 @@
 #import "UberKit.h"
 
 NSString * const baseURL = @"https://api.uber.com/v1";
+//NSString * const baseURL = @"https://sandbox-api.uber.com/v1/";
 NSString * const mobile_safari_string = @"com.apple.mobilesafari";
 
 @interface UberKit()
@@ -261,11 +262,57 @@ NSString * const mobile_safari_string = @"com.apple.mobilesafari";
      }];
 }
 
+#pragma mark - Request
+
+- (void) getResponseFromRequestWithParameters:(NSDictionary *)params withCompletionHandler:(RequestHandler)handler
+{
+    NSString *baseURL = @"https://sandbox-api.uber.com/v1";
+    NSString *url = [NSString stringWithFormat:@"%@/requests", baseURL];
+    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:url]];
+    [request addValue:@"application/json; charset=utf-8" forHTTPHeaderField:@"Content-Type"];
+    [request addValue:[NSString stringWithFormat:@"Bearer %@", _accessToken] forHTTPHeaderField:@"Authorization"];
+    
+    NSError *error = nil;
+    request.HTTPMethod = @"POST";
+    request.HTTPBody = [NSJSONSerialization dataWithJSONObject:params options:0 error:&error];
+    
+    [self performNetworkOperationWithRequest:request completionHandler:^(NSDictionary *requestDictionary, NSURLResponse *response, NSError *error) {
+        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
+        if (httpResponse.statusCode >= 200 && httpResponse.statusCode < 300) { //OK
+            UberRequest *requestResult = [[UberRequest alloc] initWithDictionary:requestDictionary];
+            handler(requestResult, response, error);
+        } else {
+            handler(nil, response, error);
+        }
+    }];
+}
+
+#pragma mark - Request - Details
+
+//- (void) getDetailsFromRequestId:(NSString *)requestId withCompletionHandler:(RequestHandler)handler
+//{
+//    //GET /v1/requests/{request_id}
+//    NSString *baseURL = @"https://sandbox-api.uber.com/v1";
+//    NSString *url = [NSString stringWithFormat:@"%@/requests/%@", baseURL, requestId];
+//    [self performNetworkOperationWithURL:url completionHandler:^(NSDictionary *detailDictionary, NSURLResponse *response, NSError *error) {
+//        if(detailDictionary)
+//        {
+//            UberProfile *profile = [[UberProfile alloc] initWithDictionary:profileDictionary];
+//            handler(profile, response, error);
+//        }
+//        else
+//        {
+//            handler(nil, response, error);
+//        }
+//    }];
+//}
+
 #pragma mark - Login flow
 
 - (BOOL) handleLoginRedirectFromUrl:(NSURL *)url sourceApplication:(NSString *)sourceApplication
 {
-    if ([sourceApplication isEqualToString:mobile_safari_string] && [url.absoluteURL.host hasPrefix:_redirectURL])
+    NSLog(@"url.absoluteURL.host is %@", url.absoluteURL.host);
+    if ([sourceApplication isEqualToString:mobile_safari_string] && [url.absoluteString hasPrefix:_redirectURL])
     {
         NSString *code = nil;
         NSArray *urlParams = [[url query] componentsSeparatedByString:@"&"];
@@ -286,11 +333,9 @@ NSString * const mobile_safari_string = @"com.apple.mobilesafari";
             {
                 NSLog(@"There was an error returning from mobile safari");
             }
-            
             return NO;
         }
     }
-    
     return YES;
 }
 
@@ -335,12 +380,14 @@ NSString * const mobile_safari_string = @"com.apple.mobilesafari";
 
 - (void)setupOAuth2AccountStore
 {
-    [[NXOAuth2AccountStore sharedStore] setClientID:_clientID
-                                             secret:_clientSecret
-                                   authorizationURL:[NSURL URLWithString:@"https://login.uber.com/oauth/authorize"]
-                                           tokenURL:[NSURL URLWithString:@"https://login.uber.com/oauth/token"]
-                                        redirectURL:[NSURL URLWithString:_redirectURL]
-                                     forAccountType:_applicationName];
+    [[NXOAuth2AccountStore sharedStore] setClientID:_clientID secret:_clientSecret scope:[NSSet setWithObjects:@"request", @"history_lite", @"profile", nil] authorizationURL:[NSURL URLWithString:@"https://login.uber.com/oauth/authorize"] tokenURL:[NSURL URLWithString:@"https://login.uber.com/oauth/token"] redirectURL:[NSURL URLWithString:_redirectURL] keyChainGroup:nil forAccountType:_applicationName];
+
+//    [[NXOAuth2AccountStore sharedStore] setClientID:_clientID
+//                                             secret:_clientSecret
+//                                   authorizationURL:[NSURL URLWithString:@"https://login.uber.com/oauth/authorize"]
+//                                           tokenURL:[NSURL URLWithString:@"https://login.uber.com/oauth/token"]
+//                                        redirectURL:[NSURL URLWithString:_redirectURL]
+//                                     forAccountType:_applicationName];
     
     
     
@@ -393,32 +440,6 @@ NSString * const mobile_safari_string = @"com.apple.mobilesafari";
     }
 }
 
-#pragma mark - Request
-
-- (void) getResponseFromRequestWithParameters:(NSDictionary *)params withCompletionHandler:(RequestHandler)handler
-{
-    NSString *baseURL = @"https://sandbox-api.uber.com/v1";
-    NSString *url = [NSString stringWithFormat:@"%@/requests", baseURL];
-    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:url]];
-    [request addValue:@"application/json; charset=utf-8" forHTTPHeaderField:@"Content-Type"];
-    [request addValue:[NSString stringWithFormat:@"Bearer %@", _accessToken] forHTTPHeaderField:@"Authorization"];
-    
-    NSError *error = nil;
-    request.HTTPMethod = @"POST";
-    request.HTTPBody = [NSJSONSerialization dataWithJSONObject:params options:0 error:&error];
-    
-    [self performNetworkOperationWithRequest:request completionHandler:^(NSDictionary *uResponse, NSURLResponse *response, NSError *error) {
-        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
-        NSLog(@"response status code: %ld", httpResponse.statusCode);
-        NSLog(@"access token: %@", _accessToken);
-        if (httpResponse.statusCode >= 200 && httpResponse.statusCode < 300) { //OK
-            handler(uResponse, response, error);
-        } else {
-            NSLog(@"Request error: %@", error);
-            handler(nil, response, error);
-        }
-    }];
-}
 @end
 
 @implementation UberKit (Private)
