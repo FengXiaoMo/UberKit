@@ -45,6 +45,7 @@
 typedef void (^CompletionHandler) (NSArray *resultsArray, NSURLResponse *response, NSError *error);
 typedef void (^ProfileHandler) (UberProfile *profile, NSURLResponse *response, NSError *error);
 typedef void (^PromotionHandler) (UberPromotion *promotion, NSURLResponse *response, NSError *error);
+typedef void (^RequestHandler) (UberRequest *requestResult, NSURLResponse *response, NSError *error);
 
 @interface UberKit : NSObject <UIWebViewDelegate>
 
@@ -97,5 +98,9 @@ typedef void (^PromotionHandler) (UberPromotion *promotion, NSURLResponse *respo
 #pragma mark - Deep Linking
 
 - (void) openUberApp;
+
+#pragma mark - Request
+
+- (void) getResponseFromRequestWithParameters:(NSDictionary *)params withCompletionHandler:(RequestHandler)handler;
 
 @end

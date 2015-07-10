@@ -38,6 +38,9 @@ NSString * const mobile_safari_string = @"com.apple.mobilesafari";
 
 - (void) performNetworkOperationWithURL: (NSString *) url
                          completionHandler: (void (^)(NSDictionary *, NSURLResponse *, NSError *)) completion;
+- (void) performNetworkOperationWithRequest:(NSURLRequest *)request
+                          completionHandler:(void (^)(NSDictionary *, NSURLResponse *, NSError *))completion;
+
 @end
 
 @implementation UberKit
@@ -253,6 +256,31 @@ NSString * const mobile_safari_string = @"com.apple.mobilesafari";
      }];
 }
 
+#pragma mark - Request
+
+- (void) getResponseFromRequestWithParameters:(NSDictionary *)params withCompletionHandler:(RequestHandler)handler
+{
+    NSString *baseURL = @"https://sandbox-api.uber.com/v1";
+    NSString *url = [NSString stringWithFormat:@"%@/requests", baseURL];
+    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:url]];
+    [request addValue:@"application/json; charset=utf-8" forHTTPHeaderField:@"Content-Type"];
+    [request addValue:[NSString stringWithFormat:@"Bearer %@", _accessToken] forHTTPHeaderField:@"Authorization"];
+    
+    NSError *error = nil;
+    request.HTTPMethod = @"POST";
+    request.HTTPBody = [NSJSONSerialization dataWithJSONObject:params options:0 error:&error];
+    
+    [self performNetworkOperationWithRequest:request completionHandler:^(NSDictionary *requestDictionary, NSURLResponse *response, NSError *error) {
+        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
+        if (httpResponse.statusCode >= 200 && httpResponse.statusCode < 300) { //OK
+            UberRequest *requestResult = [[UberRequest alloc] initWithDictionary:requestDictionary];
+            handler(requestResult, response, error);
+        } else {
+            handler(nil, response, error);
+        }
+    }];
+}
+
 #pragma mark - Login flow
 
 - (BOOL) handleLoginRedirectFromUrl:(NSURL *)url sourceApplication:(NSString *)sourceApplication
@@ -410,6 +438,31 @@ NSString * const mobile_safari_string = @"com.apple.mobilesafari";
         }
         else
         {
+            NSHTTPURLResponse *convertedResponse = (NSHTTPURLResponse *)response;
+            completion(nil, convertedResponse, error);
+        }
+    }] resume];
+}
+
+- (void) performNetworkOperationWithRequest:(NSURLRequest *)request completionHandler:(void (^)(NSDictionary *, NSURLResponse *, NSError *))completion
+{
+    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+    NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration];
+    
+    [[session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        if (error == nil) {
+            
+            NSError *jsonError = nil;
+            NSDictionary *serializedResults = [NSJSONSerialization JSONObjectWithData:data options:0 error:&jsonError];
+            
+            if (jsonError == nil) {
+                completion(serializedResults, response, jsonError);
+            } else {
+                NSHTTPURLResponse *convertedResponse = (NSHTTPURLResponse *)response;
+                completion(nil, convertedResponse, error);
+            }
+            
+        } else {
             NSHTTPURLResponse *convertedResponse = (NSHTTPURLResponse *)response;
             completion(nil, convertedResponse, error);
         }
