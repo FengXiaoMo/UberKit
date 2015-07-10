@@ -106,4 +106,8 @@ typedef void (^RequestHandler) (UberRequest *requestResult, NSURLResponse *respo
 
 - (void) getResponseFromRequestWithParameters:(NSDictionary *)params withCompletionHandler:(RequestHandler)handler;
 
+#pragma mark - Request Details
+
+- (void) getDetailsFromRequestId:(NSString *)requestId withCompletionHandler:(RequestHandler)handler;
+
 @end

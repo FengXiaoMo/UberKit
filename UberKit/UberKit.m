@@ -287,6 +287,26 @@ NSString * const mobile_safari_string = @"com.apple.mobilesafari";
     }];
 }
 
+#pragma mark - Request - Details
+
+- (void) getDetailsFromRequestId:(NSString *)requestId withCompletionHandler:(RequestHandler)handler
+{
+    //GET /v1/requests/{request_id}
+    NSString *baseURL = @"https://sandbox-api.uber.com/v1";
+    NSString *url = [NSString stringWithFormat:@"%@/requests/%@?access_token=%@", baseURL, requestId, _accessToken];
+    [self performNetworkOperationWithURL:url completionHandler:^(NSDictionary *detailDictionary, NSURLResponse *response, NSError *error) {
+        if(detailDictionary)
+        {
+            UberRequest *requestDetail = [[UberRequest alloc] initWithDictionary:detailDictionary];
+            handler(requestDetail, response, error);
+        }
+        else
+        {
+            handler(nil, response, error);
+        }
+    }];
+}
+
 #pragma mark - Login flow
 
 - (BOOL) handleLoginRedirectFromUrl:(NSURL *)url sourceApplication:(NSString *)sourceApplication
