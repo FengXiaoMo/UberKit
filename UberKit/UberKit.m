@@ -97,6 +97,12 @@ NSString * const mobile_safari_string = @"com.apple.mobilesafari";
     return _accessToken;
 }
 
+- (void) setAuthTokenWith:(NSString *)token
+
+{
+    _accessToken = token;
+}
+
 #pragma mark - Product Types
 
 - (void) getProductsForLocation:(CLLocation *)location withCompletionHandler:(CompletionHandler)completion
