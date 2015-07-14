@@ -252,7 +252,9 @@ To cancel your request (Uber sandbox environment)
 
 For more help, check out the <a href = https://github.com/sachinkesiraju/UberKit/tree/master/UberKitDemo> Demo </a>!
 
-For any assistance, reach out to me on Twitter <a href = https://twitter.com/sachinkesiraju> @sachinkesiraju </a>
+(New demo on the request API will come out soon.)
+
+For any assistance, reach out to my QQ: 15387636 or original author on Twitter <a href = https://twitter.com/sachinkesiraju> @sachinkesiraju </a>
 
 <h2> Featured In </h2>
 
