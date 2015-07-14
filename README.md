@@ -130,7 +130,7 @@ Add the UberKit delegate to the @interface of your view controller to detect whe
     //An error occurred in the login process
 }
 ```
-You can also retrieve the access token when it is available by using `NSString *token = [[UberKit sharedInstance] getStoredAuthToken];`
+You can also retrieve the access token when it is available by using `NSString *token = [[UberKit sharedInstance] getStoredAuthToken];` and set the access token when it is stored in your app by using `- (void) setAuthTokenWith:(NSString *)token;`
 
 To begin the login process, call the method 'startLogin' using `[uberKit startLogin];`
 
@@ -164,6 +164,90 @@ To get the profile of the user
                  NSLog(@"Error %@", error);
              }
          }];
+```
+
+To make a ride request (Uber sandbox environment)
+```objc
+[[UberKit sharedInstance] getResponseFromRequestWithParameters:parameters withCompletionHandler:^(UberRequest *requestResult, NSURLResponse *response, NSError *error) {
+            if(!error)
+             {
+                 //Got the response from the request
+             }
+             else
+             {
+                 NSLog(@"Error %@", error);
+             }
+        }];
+```
+
+To check the request status and details (Uber sandbox environment)
+```objc
+[[UberKit sharedInstance] getDetailsFromRequestId:(NSString *)requestId withCompletionHandler:^(UberRequest *requestResult, NSURLResponse *response, NSError *error) {
+            if(!error)
+             {
+                 //Got the details of the request
+             }
+             else
+             {
+                 NSLog(@"Error %@", error);
+             }
+        }];
+```
+
+To estimate a ride before making the real request
+```objc
+[[UberKit sharedInstance] getRequestEstimateWithProductId:(NSString *)productId andStartLocation:(CLLocation *)start endLocation:(CLLocation *)end withCompletionHandler:^(UberEstimate *estimateResult, NSURLResponse *response, NSError *error) {
+            if(!error)
+             {
+                 //Got the estimate result
+             }
+             else
+             {
+                 NSLog(@"Error %@", error);
+             }
+        }];
+```
+
+To get a map during the ride (Uber sandbox environment)
+```objc
+[[UberKit sharedInstance] getMapForRequestId:(NSString *)requestId withCompletionHandler:^(UberMap *mapResult, NSURLResponse *response, NSError *error) {
+            if(!error)
+             {
+                 //Got the map href
+             }
+             else
+             {
+                 NSLog(@"Error %@", error);
+             }
+        }];
+```
+
+To get the receipt of your rides
+```objc
+[[UberKit sharedInstance] getReceiptForRequestId:(NSString *)requestId withCompletionHandler:^(UberReceipt *receiptResult, NSURLResponse *response, NSError *error) {
+            if(!error)
+             {
+                 //Got the receipt detail
+             }
+             else
+             {
+                 NSLog(@"Error %@", error);
+             }
+        }];
+```
+
+To cancel your request (Uber sandbox environment)
+```objc
+[[UberKit sharedInstance] cancelRequestForId:(NSString *)requestId withCompletionHandler:^(NSURLResponse *response, NSError *error) {
+            if(!error)
+             {
+                 //Got the http status code
+             }
+             else
+             {
+                 NSLog(@"Error %@", error);
+             }
+        }];
 ```
 
 For more help, check out the <a href = https://github.com/sachinkesiraju/UberKit/tree/master/UberKitDemo> Demo </a>!
