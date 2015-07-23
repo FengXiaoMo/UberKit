@@ -1,4 +1,4 @@
-//
+ //
 //  UberKit.h
 //  UberKit
 //
@@ -49,11 +49,11 @@
 typedef void (^CompletionHandler) (NSArray *resultsArray, NSURLResponse *response, NSError *error);
 typedef void (^ProfileHandler) (UberProfile *profile, NSURLResponse *response, NSError *error);
 typedef void (^PromotionHandler) (UberPromotion *promotion, NSURLResponse *response, NSError *error);
-typedef void (^RequestHandler) (UberRequest *requestResult, NSURLResponse *response, NSError *error);
 typedef void (^EstimateHandler) (UberEstimate *estimateResult, NSURLResponse *response, NSError *error);
 typedef void (^CancelHandler) (NSURLResponse *response, NSError *error);
 typedef void (^MapHandler) (UberMap *mapResult, NSURLResponse *response, NSError *error);
 typedef void (^ReceiptHandler) (UberReceipt *receiptResult, NSURLResponse *response, NSError *error);
+typedef void (^RequestHandler) (UberRequest *requestResult, UberSurgeErrorResponse *surgeErrorResponse, NSURLResponse *response, NSError *error);
 
 @interface UberKit : NSObject <UIWebViewDelegate>
 
@@ -78,7 +78,6 @@ typedef void (^ReceiptHandler) (UberReceipt *receiptResult, NSURLResponse *respo
 
 - (void) startLogin;
 - (NSString *) getStoredAuthToken;
-- (void) setAuthTokenWith:(NSString *)token;
 
 #pragma mark - Product Types
 
@@ -110,11 +109,11 @@ typedef void (^ReceiptHandler) (UberReceipt *receiptResult, NSURLResponse *respo
 
 #pragma mark - Request
 
-- (void) getResponseFromRequestWithParameters:(NSDictionary *)params withCompletionHandler:(RequestHandler)handler;
+- (void) getResponseForRequestWithParameters:(NSDictionary *)params withCompletionHandler:(RequestHandler)handler;
 
 #pragma mark - Request Details
 
-- (void) getDetailsFromRequestId:(NSString *)requestId withCompletionHandler:(RequestHandler)handler;
+- (void) getDetailsForRequestId:(NSString *)requestId withCompletionHandler:(RequestHandler)handler;
 
 #pragma mark - Request Estimate
 
