@@ -315,6 +315,8 @@ NSString * const mobile_safari_string = @"com.apple.mobilesafari";
     }];
 }
 
+=======
+>>>>>>> request
 #pragma mark - Login flow
 
 - (BOOL) handleLoginRedirectFromUrl:(NSURL *)url sourceApplication:(NSString *)sourceApplication
@@ -395,8 +397,8 @@ NSString * const mobile_safari_string = @"com.apple.mobilesafari";
                                            tokenURL:[NSURL URLWithString:@"https://login.uber.com/oauth/token"]
                                         redirectURL:[NSURL URLWithString:_redirectURL]
                                       keyChainGroup:nil
-                                     forAccountType:_applicationName];    
-    
+                                     forAccountType:_applicationName];
+        
     [[NSNotificationCenter defaultCenter] addObserverForName:NXOAuth2AccountStoreAccountsDidChangeNotification
                                                       object:[NXOAuth2AccountStore sharedStore]
                                                        queue:nil
