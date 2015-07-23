@@ -38,9 +38,9 @@ NSString * const mobile_safari_string = @"com.apple.mobilesafari";
 @interface UberKit (Private)
 
 - (void) performNetworkOperationWithURL: (NSString *) url
-                         completionHandler: (void (^)(NSDictionary *, NSURLResponse *, NSError *)) completion;
+                      completionHandler: (void (^)(NSDictionary *, NSURLResponse *, NSError *)) completion;
 - (void) performNetworkOperationWithRequest:(NSURLRequest *)request
-                         completionHandler:(void (^)(NSDictionary *, NSURLResponse *, NSError *))completion;
+                          completionHandler:(void (^)(NSDictionary *, NSURLResponse *, NSError *))completion;
 
 @end
 
@@ -265,7 +265,7 @@ NSString * const mobile_safari_string = @"com.apple.mobilesafari";
 
 #pragma mark - Request
 
-- (void) getResponseFromRequestWithParameters:(NSDictionary *)params withCompletionHandler:(RequestHandler)handler
+- (void) getResponseForRequestWithParameters:(NSDictionary *)params withCompletionHandler:(RequestHandler)handler
 {
     NSString *url = [NSString stringWithFormat:@"%@/requests", sandBoxURL];
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:url]];
@@ -280,9 +280,15 @@ NSString * const mobile_safari_string = @"com.apple.mobilesafari";
         NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
         if (httpResponse.statusCode >= 200 && httpResponse.statusCode < 300) { //OK
             UberRequest *requestResult = [[UberRequest alloc] initWithDictionary:requestDictionary];
-            handler(requestResult, response, error);
-        } else {
-            handler(nil, response, error);
+            handler(requestResult, nil, response, error);
+        }
+        if (409 == httpResponse.statusCode) { //needs surge confirmation
+            UberSurgeErrorResponse *surgeErrorResponse = [[UberSurgeErrorResponse alloc] initWithDictionary:requestDictionary];
+            handler(nil, surgeErrorResponse, response, error);
+        }
+        else
+        {
+            handler(nil, nil, response, error);
         }
     }];
 }
@@ -333,7 +339,7 @@ NSString * const mobile_safari_string = @"com.apple.mobilesafari";
 
 #pragma mark - Request - Details
 
-- (void) getDetailsFromRequestId:(NSString *)requestId withCompletionHandler:(RequestHandler)handler
+- (void) getDetailsForRequestId:(NSString *)requestId withCompletionHandler:(RequestHandler)handler
 {
     //GET /v1/requests/{request_id}
     NSString *url = [NSString stringWithFormat:@"%@/requests/%@?access_token=%@", sandBoxURL, requestId, _accessToken];
@@ -345,8 +351,15 @@ NSString * const mobile_safari_string = @"com.apple.mobilesafari";
         }
         else
         {
-            handler(nil, response, error);
+            handler(requestResult, nil, response, error);
         }
+        if (409 == httpResponse.statusCode) { //needs surge confirmation
+            UberSurgeErrorResponse *surgeErrorResponse = [[UberSurgeErrorResponse alloc] initWithDictionary:requestDictionary];
+            handler(nil, surgeErrorResponse, response, error);
+        }
+        else
+        {
+            handler(nil, nil, response, error);
     }];
 }
 
