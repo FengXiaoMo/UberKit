@@ -258,7 +258,7 @@ NSString * const mobile_safari_string = @"com.apple.mobilesafari";
 
 #pragma mark - Request
 
-- (void) getResponseFromRequestWithParameters:(NSDictionary *)params withCompletionHandler:(RequestHandler)handler
+- (void) getResponseForRequestWithParameters:(NSDictionary *)params withCompletionHandler:(RequestHandler)handler
 {
     NSString *baseURL = @"https://sandbox-api.uber.com/v1";
     NSString *url = [NSString stringWithFormat:@"%@/requests", baseURL];
@@ -274,9 +274,15 @@ NSString * const mobile_safari_string = @"com.apple.mobilesafari";
         NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
         if (httpResponse.statusCode >= 200 && httpResponse.statusCode < 300) { //OK
             UberRequest *requestResult = [[UberRequest alloc] initWithDictionary:requestDictionary];
-            handler(requestResult, response, error);
-        } else {
-            handler(nil, response, error);
+            handler(requestResult, nil, response, error);
+        }
+        if (409 == httpResponse.statusCode) { //needs surge confirmation
+            UberSurgeErrorResponse *surgeErrorResponse = [[UberSurgeErrorResponse alloc] initWithDictionary:requestDictionary];
+            handler(nil, surgeErrorResponse, response, error);
+        }
+        else
+        {
+            handler(nil, nil, response, error);
         }
     }];
 }

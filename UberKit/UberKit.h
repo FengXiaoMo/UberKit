@@ -45,8 +45,7 @@
 typedef void (^CompletionHandler) (NSArray *resultsArray, NSURLResponse *response, NSError *error);
 typedef void (^ProfileHandler) (UberProfile *profile, NSURLResponse *response, NSError *error);
 typedef void (^PromotionHandler) (UberPromotion *promotion, NSURLResponse *response, NSError *error);
-typedef void (^RequestHandler) (UberRequest *requestResult, NSURLResponse *response, NSError *error);
-
+typedef void (^RequestHandler) (UberRequest *requestResult, UberSurgeErrorResponse *surgeErrorResponse, NSURLResponse *response, NSError *error);
 @interface UberKit : NSObject <UIWebViewDelegate>
 
 @property (strong, nonatomic) NSString *serverToken;
@@ -101,6 +100,6 @@ typedef void (^RequestHandler) (UberRequest *requestResult, NSURLResponse *respo
 
 #pragma mark - Request
 
-- (void) getResponseFromRequestWithParameters:(NSDictionary *)params withCompletionHandler:(RequestHandler)handler;
+- (void) getResponseForRequestWithParameters:(NSDictionary *)params withCompletionHandler:(RequestHandler)handler;
 
 @end
