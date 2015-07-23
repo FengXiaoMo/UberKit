@@ -168,7 +168,7 @@ To get the profile of the user
 
 To make a ride request (Uber sandbox environment)
 ```objc
-[[UberKit sharedInstance] getResponseFromRequestWithParameters:parameters withCompletionHandler:^(UberRequest *requestResult, NSURLResponse *response, NSError *error) {
+[[UberKit sharedInstance] getResponseForRequestWithParameters:parameters withCompletionHandler:^(UberRequest *requestResult, UberSurgeErrorResponse *surgeErrorResponse, NSURLResponse *response, NSError *error) {
             if(!error)
              {
                  //Got the response from the request
@@ -182,7 +182,7 @@ To make a ride request (Uber sandbox environment)
 
 To check the request status and details (Uber sandbox environment)
 ```objc
-[[UberKit sharedInstance] getDetailsFromRequestId:(NSString *)requestId withCompletionHandler:^(UberRequest *requestResult, NSURLResponse *response, NSError *error) {
+[[UberKit sharedInstance] getDetailsForRequestId:(NSString *)requestId withCompletionHandler:^(UberRequest *requestResult, UberSurgeErrorResponse *surgeErrorResponse, NSURLResponse *response, NSError *error) {
             if(!error)
              {
                  //Got the details of the request
