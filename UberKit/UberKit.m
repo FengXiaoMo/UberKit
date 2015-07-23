@@ -40,7 +40,7 @@ NSString * const mobile_safari_string = @"com.apple.mobilesafari";
 - (void) performNetworkOperationWithURL: (NSString *) url
                       completionHandler: (void (^)(NSDictionary *, NSURLResponse *, NSError *)) completion;
 - (void) performNetworkOperationWithRequest:(NSURLRequest *)request
-                          completionHandler:(void (^)(NSDictionary *, NSURLResponse *, NSError *))completion;
+                      completionHandler:(void (^)(NSDictionary *, NSURLResponse *, NSError *))completion;
 
 @end
 
@@ -261,7 +261,9 @@ NSString * const mobile_safari_string = @"com.apple.mobilesafari";
 
 - (void) getResponseForRequestWithParameters:(NSDictionary *)params withCompletionHandler:(RequestHandler)handler
 {
+    //POST /v1/requests
     NSString *url = [NSString stringWithFormat:@"%@/requests", sandBoxURL];
+    
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:url]];
     [request addValue:@"application/json; charset=utf-8" forHTTPHeaderField:@"Content-Type"];
     [request addValue:[NSString stringWithFormat:@"Bearer %@", _accessToken] forHTTPHeaderField:@"Authorization"];

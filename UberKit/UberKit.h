@@ -54,7 +54,6 @@ typedef void (^CancelHandler) (NSURLResponse *response, NSError *error);
 typedef void (^MapHandler) (UberMap *mapResult, NSURLResponse *response, NSError *error);
 typedef void (^ReceiptHandler) (UberReceipt *receiptResult, NSURLResponse *response, NSError *error);
 typedef void (^RequestHandler) (UberRequest *requestResult, UberSurgeErrorResponse *surgeErrorResponse, NSURLResponse *response, NSError *error);
->>>>>>> details
 
 @interface UberKit : NSObject <UIWebViewDelegate>
 
