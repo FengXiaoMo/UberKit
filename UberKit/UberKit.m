@@ -38,9 +38,9 @@ NSString * const mobile_safari_string = @"com.apple.mobilesafari";
 @interface UberKit (Private)
 
 - (void) performNetworkOperationWithURL: (NSString *) url
-                         completionHandler: (void (^)(NSDictionary *, NSURLResponse *, NSError *)) completion;
+                      completionHandler: (void (^)(NSDictionary *, NSURLResponse *, NSError *)) completion;
 - (void) performNetworkOperationWithRequest:(NSURLRequest *)request
-                         completionHandler:(void (^)(NSDictionary *, NSURLResponse *, NSError *))completion;
+                          completionHandler:(void (^)(NSDictionary *, NSURLResponse *, NSError *))completion;
 
 @end
 
@@ -95,11 +95,6 @@ NSString * const mobile_safari_string = @"com.apple.mobilesafari";
 - (NSString *) getStoredAuthToken
 {
     return _accessToken;
-}
-
-- (void) setAuthTokenWith:(NSString *)token
-{
-    _accessToken = token;
 }
 
 #pragma mark - Product Types
@@ -264,7 +259,7 @@ NSString * const mobile_safari_string = @"com.apple.mobilesafari";
 
 #pragma mark - Request
 
-- (void) getResponseFromRequestWithParameters:(NSDictionary *)params withCompletionHandler:(RequestHandler)handler
+- (void) getResponseForRequestWithParameters:(NSDictionary *)params withCompletionHandler:(RequestHandler)handler
 {
     NSString *baseURL = @"https://sandbox-api.uber.com/v1";
     NSString *url = [NSString stringWithFormat:@"%@/requests", baseURL];
@@ -280,16 +275,22 @@ NSString * const mobile_safari_string = @"com.apple.mobilesafari";
         NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
         if (httpResponse.statusCode >= 200 && httpResponse.statusCode < 300) { //OK
             UberRequest *requestResult = [[UberRequest alloc] initWithDictionary:requestDictionary];
-            handler(requestResult, response, error);
-        } else {
-            handler(nil, response, error);
+            handler(requestResult, nil, response, error);
+        }
+        if (409 == httpResponse.statusCode) { //needs surge confirmation
+            UberSurgeErrorResponse *surgeErrorResponse = [[UberSurgeErrorResponse alloc] initWithDictionary:requestDictionary];
+            handler(nil, surgeErrorResponse, response, error);
+        }
+        else
+        {
+            handler(nil, nil, response, error);
         }
     }];
 }
 
 #pragma mark - Request - Details
 
-- (void) getDetailsFromRequestId:(NSString *)requestId withCompletionHandler:(RequestHandler)handler
+- (void) getDetailsForRequestId:(NSString *)requestId withCompletionHandler:(RequestHandler)handler
 {
     //GET /v1/requests/{request_id}
     NSString *baseURL = @"https://sandbox-api.uber.com/v1";
@@ -302,8 +303,15 @@ NSString * const mobile_safari_string = @"com.apple.mobilesafari";
         }
         else
         {
-            handler(nil, response, error);
+            handler(requestResult, nil, response, error);
         }
+        if (409 == httpResponse.statusCode) { //needs surge confirmation
+            UberSurgeErrorResponse *surgeErrorResponse = [[UberSurgeErrorResponse alloc] initWithDictionary:requestDictionary];
+            handler(nil, surgeErrorResponse, response, error);
+        }
+        else
+        {
+            handler(nil, nil, response, error);
     }];
 }
 
@@ -380,16 +388,14 @@ NSString * const mobile_safari_string = @"com.apple.mobilesafari";
 
 - (void)setupOAuth2AccountStore
 {
-    [[NXOAuth2AccountStore sharedStore] setClientID:_clientID secret:_clientSecret scope:[NSSet setWithObjects:@"request", @"history_lite", @"profile", nil] authorizationURL:[NSURL URLWithString:@"https://login.uber.com/oauth/authorize"] tokenURL:[NSURL URLWithString:@"https://login.uber.com/oauth/token"] redirectURL:[NSURL URLWithString:_redirectURL] keyChainGroup:nil forAccountType:_applicationName];
-
-//    [[NXOAuth2AccountStore sharedStore] setClientID:_clientID
-//                                             secret:_clientSecret
-//                                   authorizationURL:[NSURL URLWithString:@"https://login.uber.com/oauth/authorize"]
-//                                           tokenURL:[NSURL URLWithString:@"https://login.uber.com/oauth/token"]
-//                                        redirectURL:[NSURL URLWithString:_redirectURL]
-//                                     forAccountType:_applicationName];
-    
-    
+    [[NXOAuth2AccountStore sharedStore] setClientID:_clientID
+                                             secret:_clientSecret
+                                              scope:[NSSet setWithObjects:@"request", @"history_lite", @"profile", nil]
+                                   authorizationURL:[NSURL URLWithString:@"https://login.uber.com/oauth/authorize"]
+                                           tokenURL:[NSURL URLWithString:@"https://login.uber.com/oauth/token"]
+                                        redirectURL:[NSURL URLWithString:_redirectURL]
+                                      keyChainGroup:nil
+                                     forAccountType:_applicationName];    
     
     [[NSNotificationCenter defaultCenter] addObserverForName:NXOAuth2AccountStoreAccountsDidChangeNotification
                                                       object:[NXOAuth2AccountStore sharedStore]
