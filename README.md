@@ -5,10 +5,7 @@ UberKit is a simple Objective-C wrapper for the new <a href = http://developer.u
 
 <h1> Installation </h1>
 <h3> Cocoapods </h3>
-UberKit is available through <a href = "cocoapods.org"> Cocoapods</a>. To install it, simply add the following to your Podfile.
-```
-pod 'UberKit'
-```
+UberKit enhanced by me is currently unavailable with Cocoapods.
 <h3> Alternative </h3>
 Alternatively, you can always just drag and drop the folder 'UberKit' into your project and ``#import "UberKit.h"`` and you're good to go.
 
